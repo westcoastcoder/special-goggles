@@ -1,6 +1,24 @@
 import sys
+# Convert the txt based file into one that uses sqlite3
+import sqlite3
 
 args = sys.argv
+# print(type(args))
+
+# Create connection to sqlite3 database
+conn = sqlite3.connect("tasks.sqlite")
+
+# Create cursor
+cur = conn.cursor()
+
+# Create our table if necessary
+cur.executescript('''
+CREATE TABLE IF NOT EXISTS Task List (
+    task_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+    title TEXT
+    content TEXT
+);
+''')
 
 tasks = []
 
