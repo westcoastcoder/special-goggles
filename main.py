@@ -1,6 +1,7 @@
 import sys
 
 args = sys.argv
+tasks = []
 
 try:
     command = args[1]
@@ -17,6 +18,12 @@ if command == "add":
 elif command == "remove":
     print("removing")
 elif command == "list":
-    print("listing")
+    # print("listing")
+    if len(tasks) == 0:
+        print("No tasks present.")
+    else:
+        for task in tasks:
+            title, content = task.split("|")
+            print("{0} {1}".format(title, content))
 else:
     print("invalid command!")
