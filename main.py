@@ -1,6 +1,7 @@
 import sys
 
 args = sys.argv
+
 tasks = []
 
 try:
@@ -16,21 +17,27 @@ if command not in ("add", "remove", "list"):
 if command == "add":
     title = args[2]
     content = args[3]
-    task = title + content
+    task = title + "|" + content
     file = open("tasks.txt", "a")
     file.write(task+"\n")
     file.close()
 elif command == "remove":
     print("removing")
 elif command == "list":
-    file = open("tasks.txt", "r")
+    try:
+        file = open("tasks.txt", "r")
+    except IOError as e:
+        print(str(e))
+        sys.exit(1)
     tasks = file.readlines()
     if len(tasks) == 0:
         print("No tasks present.")
     else:
-        for task in tasks:
-            title, content = task.split("|")
-            print("{0} {1}".format(title, content))
+        print("|-{0}---{1}------{2}----|".format("index", "title", "content"))
+        tasks = [task.strip() for task in tasks]
+        for i in range(len(tasks)):
+            title, content = tasks[i].split("|")
+            print("|-{0}--{1}----{2}-|".format(i, title, content))
     file.close()
 else:
     print("invalid command!")
