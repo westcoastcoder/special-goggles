@@ -13,9 +13,9 @@ cur = conn.cursor()
 
 # Create our table if necessary
 cur.executescript('''
-CREATE TABLE IF NOT EXISTS Task List (
+CREATE TABLE IF NOT EXISTS TaskList (
     task_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-    title TEXT
+    title TEXT,
     content TEXT
 );
 ''')
