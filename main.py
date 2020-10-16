@@ -22,7 +22,19 @@ if command == "add":
     file.write(task+"\n")
     file.close()
 elif command == "remove":
-    print("removing")
+    try:
+        file = open("tasks.txt", 'r')
+    except IOError as e:
+        print(str(e))
+        sys.exit(1)
+    file.close()
+    tasks = file.readlines()
+    tasks = [task.strip() for task in tasks]
+    task_id = args[2]
+    del tasks[int(task_id)]
+    file = open("tasks.txt", "w")
+    tasks = [task + "\n" for task in tasks]
+    file.writelines(tasks)
 elif command == "list":
     try:
         file = open("tasks.txt", "r")
