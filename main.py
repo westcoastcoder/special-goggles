@@ -53,6 +53,9 @@ elif command == "remove":
         print('Error: ' + str(e))
         sys.exit(1)
 
+    # The following code may be inefficient if the number
+    # of items on the task list grows significantly
+
     # Clear the db and reset autoincrement
     cur.execute('''DELETE FROM Tasklist;''',)
     cur.execute('''DELETE FROM sqlite_sequence WHERE NAME='Tasklist';''')
@@ -72,10 +75,12 @@ elif command == "list":
     if len(fullTask) == 0:
         print("No tasks present.")
     else:
-        print("|-{0}---{1}------{2}--------------|".format("index", "title", "content"))
+        print(("|-{0}---{1}------{2}--------------|".format
+              ("index", "title", "content")))
         for i in range(len(fullTask)):
             title, content = fullTask[i][1], fullTask[i][2]
-            print("|---{0}-----{1}----{2}--------------|".format(i, title, content))
+            print(("|---{0}-----{1}----{2}--------------|".format
+                  ((i+1), title, content)))
     # Close connection to db
     conn.close()
 else:
