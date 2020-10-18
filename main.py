@@ -2,23 +2,20 @@ import sys
 # Convert the txt based file into one that uses sqlite3
 import sqlite3
 
-args = sys.argv
-# print(type(args))
-
 # Create connection to sqlite3 database
-conn = sqlite3.connect("tasks.sqlite")
-
+conn = sqlite3.connect("tasks.sqlite", isolation_level=None)
 # Create cursor
 cur = conn.cursor()
 
 # Create our table if necessary
-cur.executescript('''
-CREATE TABLE IF NOT EXISTS TaskList (
+cur.execute('''
+CREATE TABLE IF NOT EXISTS Tasklist (
     task_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-    title TEXT,
-    content TEXT
-);
+    title TEXT NOT NULL,
+    content TEXT NOT NULL)
 ''')
+
+args = sys.argv
 
 tasks = []
 
@@ -35,16 +32,19 @@ if command not in ("add", "remove", "list"):
 if command == "add":
     title = args[2]
     content = args[3]
-    task = title + "|" + content
-    file = open("tasks.txt", "a")
-    file.write(task+"\n")
-    file.close()
+    print(title)
+    print(content)
+    # Adds the new task to the database
+    addSQL = '''INSERT INTO Tasklist (title, content) VALUES (?, ?)'''
+    cur.execute(addSQL, (title, content))
 elif command == "remove":
-    try:
-        file = open("tasks.txt", 'r')
-    except IOError as e:
-        print(str(e))
-        sys.exit(1)
+    # this try/except may not be necessary as we now create
+    # our table immediately
+    # try:
+    #    file = open("tasks.txt", 'r')
+    # except IOError as e:
+    #    print(str(e))
+    #    sys.exit(1)
     file.close()
     tasks = file.readlines()
     tasks = [task.strip() for task in tasks]
