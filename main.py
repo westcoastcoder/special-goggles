@@ -32,27 +32,33 @@ if command not in ("add", "remove", "list"):
 if command == "add":
     title = args[2]
     content = args[3]
-    print(title)
-    print(content)
     # Adds the new task to the database
     addSQL = '''INSERT INTO Tasklist (title, content) VALUES (?, ?)'''
     cur.execute(addSQL, (title, content))
 elif command == "remove":
-    # this try/except may not be necessary as we now create
-    # our table immediately
-    # try:
-    #    file = open("tasks.txt", 'r')
-    # except IOError as e:
-    #    print(str(e))
-    #    sys.exit(1)
-    file.close()
-    tasks = file.readlines()
-    tasks = [task.strip() for task in tasks]
+    # Fetch tasklist data from db
+    fetchSQL = '''SELECT * FROM Tasklist'''
+    cur.execute(fetchSQL)
+
+    # Assign data to list
+    fullTask = cur.fetchall()
     task_id = args[2]
-    del tasks[int(task_id)]
-    file = open("tasks.txt", "w")
-    tasks = [task + "\n" for task in tasks]
-    file.writelines(tasks)
+
+    # This might explode if the list is empty
+    try:
+        del fullTask[int(task_id)-1]
+    except IndexError as e:
+        print('Error: ' + str(e))
+        sys.exit(1)
+
+    # Clear the db and reset autoincrement
+    cur.execute('''DELETE FROM Tasklist;''',)
+    cur.execute('''DELETE FROM sqlite_sequence WHERE NAME='Tasklist';''')
+
+    # Re-pop the db with post-deletion task list
+    for item in fullTask:
+        cur.execute('''INSERT INTO Tasklist(title, content) VALUES (?, ?)''',
+                    (item[1], item[2]))
 elif command == "list":
     try:
         file = open("tasks.txt", "r")
