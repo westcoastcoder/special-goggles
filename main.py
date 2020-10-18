@@ -35,6 +35,8 @@ if command == "add":
     # Adds the new task to the database
     addSQL = '''INSERT INTO Tasklist (title, content) VALUES (?, ?)'''
     cur.execute(addSQL, (title, content))
+    # Close connection to db
+    conn.close()
 elif command == "remove":
     # Fetch tasklist data from db
     fetchSQL = '''SELECT * FROM Tasklist'''
@@ -59,21 +61,22 @@ elif command == "remove":
     for item in fullTask:
         cur.execute('''INSERT INTO Tasklist(title, content) VALUES (?, ?)''',
                     (item[1], item[2]))
+    # Close connection to db
+    conn.close()
 elif command == "list":
-    try:
-        file = open("tasks.txt", "r")
-    except IOError as e:
-        print(str(e))
-        sys.exit(1)
-    tasks = file.readlines()
-    if len(tasks) == 0:
+    # get data from db
+    fetchSQL = '''SELECT * FROM Tasklist'''
+    cur.execute(fetchSQL)
+    # Assign data to list
+    fullTask = cur.fetchall()
+    if len(fullTask) == 0:
         print("No tasks present.")
     else:
-        print("|-{0}---{1}------{2}----|".format("index", "title", "content"))
-        tasks = [task.strip() for task in tasks]
-        for i in range(len(tasks)):
-            title, content = tasks[i].split("|")
-            print("|-{0}--{1}----{2}-|".format(i, title, content))
-    file.close()
+        print("|-{0}---{1}------{2}--------------|".format("index", "title", "content"))
+        for i in range(len(fullTask)):
+            title, content = fullTask[i][1], fullTask[i][2]
+            print("|---{0}-----{1}----{2}--------------|".format(i, title, content))
+    # Close connection to db
+    conn.close()
 else:
     print("invalid command!")
